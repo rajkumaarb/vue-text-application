@@ -4,28 +4,46 @@
     <button :disabled="!searchText" @click="doSearch()" type="button">Search</button>
     <button @click="clearData()">Clear</button>
     <div class="word-count" v-if="searchCount > 0"> Total Occurrence of {{searchText}}: {{searchCount}}</div>
-    <div class="my-container">{{contentdata}}</div>
+    <div class="my-container" v-html="displaydata"></div>
   </div>
 </template>
 <script>
 export default {
   name: 'FileContentDisplay',
   props: ['contentdata'],
+  filters: {
+    myFilter: function (words, query) {
+      if (query === '') {
+        return
+      }
+      var iQuery = new RegExp(query, 'ig')
+      return words.toString().replace(iQuery, function (matchedTxt, a, b) {
+        return ('<span class=\'hghlight-word\'>' + matchedTxt + '</span>')
+      })
+    }
+  },
+  computed: {
+    displaydata: function () {
+      return this.toData
+    }
+  },
   data: () => ({
     searchText: '',
-    searchCount: 0
+    searchCount: 0,
+    toData: ''
   }),
+  created () {
+    this.toData = this.contentdata
+  },
   methods: {
     doSearch () {
       const toSearch = new RegExp(this.searchText, 'ig')
-      let dispData = this.contentdata
       this.searchCount = (this.contentdata.match(toSearch) || []).length
       if (this.searchText !== '') {
-        dispData = this.contentdata.replace(toSearch, matchedText => {
-          return `<span class="hghlight-word">${matchedText}</span>`
+        this.toData = this.contentdata.replace(toSearch, matchedText => {
+          return ('<span class=\'hghlight-word\'>' + matchedText + '</span>')
         })
       }
-      this.$emit('update-data', dispData)
     },
     clearData () {
       this.searchCount = 0
@@ -35,6 +53,9 @@ export default {
 }
 </script>
 <style scoped>
+.my-container >>> .hghlight-word {
+  background-color: orange;
+}
 .my-wrapper {
   margin: 20px 40px;
 }
@@ -63,8 +84,5 @@ export default {
 }
 .word-count {
   margin-top: 5px;
-}
-.hghlight-word {
-  background-color: yellow;
 }
 </style>

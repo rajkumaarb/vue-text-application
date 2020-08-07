@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <FileUpload @load="text = $event"></FileUpload>
-    <FileContentDisplay v-if="text" :contentdata="text" @update-data="updateText"></FileContentDisplay>
+    <FileContentDisplay v-if="text" :contentdata="text"></FileContentDisplay>
   </div>
 </template>
 
