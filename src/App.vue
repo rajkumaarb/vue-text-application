@@ -11,15 +11,13 @@ import FileContentDisplay from './components/FileContentDisplay.vue'
 
 export default {
   name: 'App',
-  data: () => ({ text: '' }),
+  setup () {
+    const text = ''
+    return { text }
+  },
   components: {
     FileUpload,
     FileContentDisplay
-  },
-  methods: {
-    updateText (text) {
-      this.text = text
-    }
   }
 }
 </script>
@@ -29,5 +27,6 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 13px;
 }
 </style>

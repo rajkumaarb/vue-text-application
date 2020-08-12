@@ -9,13 +9,16 @@
 <script>
 export default {
   name: 'FileUpload',
-  methods: {
-    uploadAndReadFile (event) {
+  setup (props, { emit }) {
+    const uploadAndReadFile = (event) => {
       const FILETOREAD = event.target.files[0]
       const FILEREADER = new FileReader()
 
-      FILEREADER.onload = e => this.$emit('load', e.target.result)
+      FILEREADER.onload = e => emit('load', e.target.result)
       FILEREADER.readAsText(FILETOREAD)
+    }
+    return {
+      uploadAndReadFile
     }
   }
 }
@@ -27,7 +30,7 @@ export default {
   cursor: pointer;
   border-radius: 5px;
   padding: 5px;
-  margin: 0px 40px;
+  margin: 10px 0px 0px 40px;
 }
 .button-class input {
   opacity: 0;
@@ -35,9 +38,5 @@ export default {
   z-index: -1;
   top: 0;
   left: 0;
-}
-.custom-button {
-  border: 0px;
-  border-radius: 5px;
 }
 </style>

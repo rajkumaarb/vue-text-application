@@ -1,53 +1,57 @@
 <template>
   <div class="my-wrapper">
-    <input type="text" placeholder="Search for a word" v-model="searchText"/>
-    <button :disabled="!searchText" @click="doSearch()" type="button">Search</button>
+    <input type="text" placeholder="Search for a word" v-model="search.text" @keyup.enter="doSearch"/>
     <button @click="clearData()">Clear</button>
-    <div class="word-count" v-if="searchCount > 0"> Total Occurrence of {{searchText}}: {{searchCount}}</div>
+    <div class="no-match-message" v-if="search.showMsg" v-once>{{search.noMatchMsg}}</div>
+    <div class="word-count" v-if="search.count > 0"> Total Occurrence : {{search.count}}</div>
     <div class="my-container" v-html="displaydata"></div>
   </div>
 </template>
 <script>
+import { reactive, ref, computed } from '@vue/composition-api'
 export default {
   name: 'FileContentDisplay',
   props: ['contentdata'],
-  filters: {
-    myFilter: function (words, query) {
-      if (query === '') {
-        return
-      }
-      var iQuery = new RegExp(query, 'ig')
-      return words.toString().replace(iQuery, function (matchedTxt, a, b) {
-        return ('<span class=\'hghlight-word\'>' + matchedTxt + '</span>')
-      })
-    }
-  },
-  computed: {
-    displaydata: function () {
-      return this.toData
-    }
-  },
-  data: () => ({
-    searchText: '',
-    searchCount: 0,
-    toData: ''
-  }),
-  created () {
-    this.toData = this.contentdata
-  },
-  methods: {
-    doSearch () {
-      const toSearch = new RegExp(this.searchText, 'ig')
-      this.searchCount = (this.contentdata.match(toSearch) || []).length
-      if (this.searchText !== '') {
-        this.toData = this.contentdata.replace(toSearch, matchedText => {
+  setup (props) {
+    const search = reactive({
+      text: '',
+      count: 0,
+      noMatchMsg: 'No match found',
+      showMsg: false
+    })
+
+    const toData = ref(props.contentdata)
+
+    const doSearch = () => {
+      const toSearch = new RegExp(search.text, 'ig')
+      if (search.text !== '') {
+        search.count = (props.contentdata.match(toSearch) || []).length
+        toData.value = props.contentdata.replace(toSearch, matchedText => {
           return ('<span class=\'hghlight-word\'>' + matchedText + '</span>')
         })
+        search.showMsg = search.count <= 0
+      } else if (search.text === '') {
+        search.showMsg = true
+        clearData()
       }
-    },
-    clearData () {
-      this.searchCount = 0
-      this.searchText = ''
+    }
+
+    const clearData = () => {
+      search.text = ''
+      search.count = 0
+      toData.value = props.contentdata
+      search.showMsg = false
+    }
+
+    const displaydata = computed(() => {
+      return toData.value
+    })
+
+    return {
+      search,
+      doSearch,
+      clearData,
+      displaydata
     }
   }
 }
@@ -84,5 +88,9 @@ export default {
 }
 .word-count {
   margin-top: 5px;
+}
+.no-match-message {
+  margin-top: 5px;
+  color: red;
 }
 </style>
