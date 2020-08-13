@@ -18,7 +18,9 @@ export default {
       const FILETOREAD = event.target.files[0]
       if (FILETOREAD.name.indexOf('.txt') === -1) {
         showErrorMessage.value = true
+        emit('load', '')
       } else {
+        emit('load', '')
         showErrorMessage.value = false
         const FILEREADER = new FileReader()
 
@@ -52,5 +54,6 @@ export default {
 }
 .error-message {
   color: red;
+  padding-left: 10px;
 }
 </style>

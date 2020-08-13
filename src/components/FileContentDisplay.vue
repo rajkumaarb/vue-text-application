@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-import { reactive, ref, computed } from '@vue/composition-api'
+import { reactive, computed } from '@vue/composition-api'
 export default {
   name: 'FileContentDisplay',
   props: ['contentdata'],
@@ -17,16 +17,15 @@ export default {
       text: '',
       count: 0,
       noMatchMsg: 'No match found',
-      showMsg: false
+      showMsg: false,
+      toData: props.contentdata
     })
-
-    const toData = ref(props.contentdata)
 
     const doSearch = () => {
       const toSearch = new RegExp(search.text, 'ig')
       if (search.text !== '') {
         search.count = (props.contentdata.match(toSearch) || []).length
-        toData.value = props.contentdata.replace(toSearch, matchedText => {
+        search.toData = props.contentdata.replace(toSearch, matchedText => {
           return ('<span class=\'hghlight-word\'>' + matchedText + '</span>')
         })
         search.showMsg = search.count <= 0
@@ -39,12 +38,12 @@ export default {
     const clearData = () => {
       search.text = ''
       search.count = 0
-      toData.value = props.contentdata
+      search.toData = props.contentdata
       search.showMsg = false
     }
 
     const displaydata = computed(() => {
-      return toData.value
+      return search.toData
     })
 
     return {
