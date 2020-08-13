@@ -1,23 +1,34 @@
 <template>
   <div>
     <label class="button-class">
-      Upload a File
-      <input type="file" @change="uploadAndReadFile"/>
+      Upload a Text File
+      <input type="file" accept=".txt" @change="uploadAndReadFile"/>
     </label>
+    <span class="error-message" v-once v-if="showErrorMessage">Upload Only Text Files!!</span>
   </div>
 </template>
 <script>
+import { ref } from '@vue/composition-api'
 export default {
   name: 'FileUpload',
   setup (props, { emit }) {
+    const showErrorMessage = ref(false)
+
     const uploadAndReadFile = (event) => {
       const FILETOREAD = event.target.files[0]
-      const FILEREADER = new FileReader()
+      if (FILETOREAD.name.indexOf('.txt') === -1) {
+        showErrorMessage.value = true
+      } else {
+        showErrorMessage.value = false
+        const FILEREADER = new FileReader()
 
-      FILEREADER.onload = e => emit('load', e.target.result)
-      FILEREADER.readAsText(FILETOREAD)
+        FILEREADER.onload = e => emit('load', e.target.result)
+        FILEREADER.readAsText(FILETOREAD)
+      }
     }
+
     return {
+      showErrorMessage,
       uploadAndReadFile
     }
   }
@@ -38,5 +49,8 @@ export default {
   z-index: -1;
   top: 0;
   left: 0;
+}
+.error-message {
+  color: red;
 }
 </style>
